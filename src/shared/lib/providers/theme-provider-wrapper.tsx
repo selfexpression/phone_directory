@@ -11,14 +11,14 @@ export const ThemeProviderWrapper = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const storedTheme = localStorage.getItem('theme') as ThemeType;
-  const [theme, setTheme] = useState<ThemeType>(storedTheme || 'light');
+  const [theme, setTheme] = useState<ThemeType>('light');
 
   useEffect(() => {
+    const storedTheme = localStorage.getItem('theme') as ThemeType;
     if (storedTheme) {
       setTheme(storedTheme);
     }
-  }, [storedTheme]);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem('theme', theme);

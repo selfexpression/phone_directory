@@ -1,12 +1,8 @@
-import { Grid2 } from '@mui/material';
-import { Contacts } from '@/components/contacts';
-import { Menu } from '@/components/menu/component';
+import { MainPage } from '@/pages/main-page';
+import { getContacts } from '@/shared/api';
+import type { IContacts } from '@/shared/types/contacts';
 
-export default function App() {
-  return (
-    <Grid2 container sx={{ height: '100vh' }}>
-      <Menu />
-      <Contacts />
-    </Grid2>
-  );
+export default async function App() {
+  const { data }: IContacts = await getContacts();
+  return <MainPage contacts={data} />;
 }

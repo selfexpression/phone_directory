@@ -1,4 +1,5 @@
-import { ThemeProviderWrapper } from '../lib/providers/mui-provider';
+import { ThemeProviderWrapper } from '@/shared/lib/providers';
+import { StoreProvider } from '@/shared/lib/providers';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
@@ -25,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ThemeProviderWrapper>{children}</ThemeProviderWrapper>
+        <StoreProvider>
+          <ThemeProviderWrapper>{children}</ThemeProviderWrapper>
+        </StoreProvider>
       </body>
     </html>
   );

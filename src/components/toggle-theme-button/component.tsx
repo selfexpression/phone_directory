@@ -1,6 +1,6 @@
 'use client';
 
-import { useTheme } from '@/lib/hooks/use-theme';
+import { useTheme } from '@/shared/hooks/use-theme';
 import { IconButton } from '@mui/material';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';

@@ -1,28 +1,26 @@
 'use client';
 
+import { useSelector } from 'react-redux';
 import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
-
-const rows = [
-  { id: 1, firstName: 'John', lastName: 'Doe', age: 25 },
-  { id: 2, firstName: 'Jane', lastName: 'Smith', age: 30 },
-  { id: 3, firstName: 'Bob', lastName: 'Johnson', age: 35 },
-];
+import { getContactsSelector } from '@/shared/lib/store/selectors';
 
 const columns: GridColDef[] = [
-  { field: 'id', headerName: 'ID', width: 90 },
-  { field: 'firstName', headerName: 'First name', width: 150 },
-  { field: 'lastName', headerName: 'Last name', width: 150 },
-  { field: 'age', headerName: 'Age', type: 'number', width: 110 },
+  { field: 'id', headerName: 'ID' },
+  { field: 'firstName', headerName: 'First name' },
+  { field: 'lastName', headerName: 'Last name' },
+  { field: 'phone', headerName: 'Phone' },
 ];
 
 export const Contacts = () => {
+  const contacts = useSelector(getContactsSelector);
+
   const handleColumnHeaderClick = (params: GridRowParams) => {
     console.log(params.id);
   };
 
   return (
     <DataGrid
-      rows={rows}
+      rows={contacts}
       columns={columns}
       checkboxSelection
       disableColumnMenu
