@@ -1,4 +1,4 @@
-import { MuiProvider } from './_providers/mui-provider';
+import { MuiProvider } from '../lib/providers/mui-provider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
