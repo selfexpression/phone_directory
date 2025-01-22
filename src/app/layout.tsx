@@ -1,3 +1,4 @@
+import { MuiProvider } from './_providers/mui-provider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
@@ -24,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        {children}
+        <MuiProvider>{children}</MuiProvider>
       </body>
     </html>
   );
