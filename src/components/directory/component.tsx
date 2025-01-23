@@ -34,6 +34,15 @@ export const Directory = () => {
   }, [contacts]);
 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (
+    params,
+    event
+  ) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
   const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
     setRowModesModel(newRowModesModel);
   };
@@ -57,11 +66,19 @@ export const Directory = () => {
     });
   };
 
+  const processRowUpdate = (newRow: IContact) => {
+    const updatedRows = rows.map((row) =>
+      row.id === newRow.id ? newRow : row
+    );
+    setRows(updatedRows);
+    return newRow;
+  };
+
   const columns: GridColDef[] = [
     { field: 'id', headerName: 'ID' },
-    { field: 'firstName', headerName: 'First name' },
-    { field: 'lastName', headerName: 'Last name' },
-    { field: 'phone', headerName: 'Phone' },
+    { field: 'firstName', headerName: 'First name', editable: true },
+    { field: 'lastName', headerName: 'Last name', editable: true },
+    { field: 'phone', headerName: 'Phone', editable: true },
     {
       field: 'actions',
       type: 'actions',
@@ -109,7 +126,9 @@ export const Directory = () => {
       editMode="row"
       rows={rows}
       columns={columns}
+      onRowEditStop={handleRowEditStop}
       rowModesModel={rowModesModel}
+      processRowUpdate={processRowUpdate}
       onRowModesModelChange={handleRowModesModelChange}
       disableColumnMenu
     />
