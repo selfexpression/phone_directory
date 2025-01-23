@@ -18,7 +18,7 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import type { IContact } from '@/shared/types/contacts';
-import { EditToolbar } from '../edit-toolbar';
+import { Toolbar } from '../toolbar';
 
 declare module '@mui/x-data-grid' {
   interface ToolbarPropsOverrides {
@@ -28,56 +28,40 @@ declare module '@mui/x-data-grid' {
     ) => void;
   }
 }
-export const Directory = () => {
-  const contacts = useSelector(getContactsSelector);
-  const [rows, setRows] = useState<IContact[]>(contacts);
 
-  useEffect(() => {
-    setRows(contacts);
-  }, [contacts]);
+interface IDirectoryColumnsActions {
+  onSetRowModesModel: (model: GridRowModesModel) => void;
+  onSetRow: (rows: IContact[]) => void;
+  rows: IContact[];
+  rowModesModel: GridRowModesModel;
+}
 
-  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
-
-  const handleRowEditStop: GridEventListener<'rowEditStop'> = (
-    params,
-    event
-  ) => {
-    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
-      event.defaultMuiPrevented = true;
-    }
-  };
-  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
-    setRowModesModel(newRowModesModel);
-  };
-
+const getDirectoryColumns = ({
+  onSetRowModesModel,
+  onSetRow,
+  rows,
+  rowModesModel,
+}: IDirectoryColumnsActions): GridColDef[] => {
   const handleEditClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    onSetRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
   const handleSaveClick = (id: GridRowId) => () => {
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    onSetRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    setRows(rows.filter((row) => row.id !== id));
+    onSetRow(rows.filter((row) => row.id !== id));
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
-    setRowModesModel({
+    onSetRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
   };
 
-  const processRowUpdate = (newRow: IContact) => {
-    const updatedRows = rows.map((row) =>
-      row.id === newRow.id ? newRow : row
-    );
-    setRows(updatedRows);
-    return newRow;
-  };
-
-  const columns: GridColDef[] = [
+  return [
     { field: 'id', headerName: 'ID' },
     { field: 'firstName', headerName: 'First name', editable: true },
     { field: 'lastName', headerName: 'Last name', editable: true },
@@ -122,7 +106,42 @@ export const Directory = () => {
         ];
       },
     },
-  ];
+  ] as const;
+};
+export const Directory = () => {
+  const contacts = useSelector(getContactsSelector);
+  const [rows, setRows] = useState<IContact[]>(contacts);
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const columns = getDirectoryColumns({
+    onSetRow: setRows,
+    onSetRowModesModel: setRowModesModel,
+    rows,
+    rowModesModel,
+  });
+
+  useEffect(() => {
+    setRows(contacts);
+  }, [contacts]);
+
+  const handleRowEditStop: GridEventListener<'rowEditStop'> = (
+    params,
+    event
+  ) => {
+    if (params.reason === GridRowEditStopReasons.rowFocusOut) {
+      event.defaultMuiPrevented = true;
+    }
+  };
+  const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
+    setRowModesModel(newRowModesModel);
+  };
+
+  const processRowUpdate = (newRow: IContact) => {
+    const updatedRows = rows.map((row) =>
+      row.id === newRow.id ? newRow : row
+    );
+    setRows(updatedRows);
+    return newRow;
+  };
 
   return (
     <DataGrid
@@ -134,7 +153,7 @@ export const Directory = () => {
       processRowUpdate={processRowUpdate}
       onRowModesModelChange={handleRowModesModelChange}
       disableColumnMenu
-      slots={{ toolbar: EditToolbar }}
+      slots={{ toolbar: Toolbar }}
       slotProps={{
         toolbar: { setRows, setRowModesModel },
       }}

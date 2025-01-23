@@ -8,8 +8,9 @@ import {
 } from '@mui/x-data-grid';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
+import { ToggleThemeButton } from '../toggle-theme-button';
 
-export const EditToolbar = (props: GridSlotProps['toolbar']) => {
+export const Toolbar = (props: GridSlotProps['toolbar']) => {
   const apiRef = useGridApiContext();
   const { setRows, setRowModesModel } = props;
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
@@ -38,6 +39,7 @@ export const EditToolbar = (props: GridSlotProps['toolbar']) => {
       <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
         Add record
       </Button>
+      <ToggleThemeButton />
     </GridToolbarContainer>
   );
 };

@@ -4,7 +4,6 @@ import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Grid2 } from '@mui/material';
 import { Directory } from '@/components/directory/component';
-import { Menu } from '@/components/menu/component';
 import type { IContact } from '@/shared/types/contacts';
 import { actions } from '@/shared/lib/store';
 
@@ -20,7 +19,6 @@ export const MainPage: React.FC<MainPageProps> = ({ contacts }) => {
 
   return (
     <Grid2 container sx={{ height: '100vh' }}>
-      <Menu />
       <Directory />
     </Grid2>
   );
