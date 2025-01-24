@@ -1,3 +1,6 @@
+'use client';
+
+import { useDispatch, useSelector } from 'react-redux';
 import {
   GridRowModes,
   GridToolbarContainer,
@@ -9,21 +12,28 @@ import {
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
 import { ToggleThemeButton } from '../toggle-theme-button';
+import { SearchContacts } from '../search-contacts';
+import { getContactsSelector } from '@/shared/lib/store/selectors';
+import { actions } from '@/shared/lib/store';
 
 export const Toolbar = (props: GridSlotProps['toolbar']) => {
+  const dispatch = useDispatch();
+  const rows = useSelector(getContactsSelector);
   const apiRef = useGridApiContext();
-  const { setRows, setRowModesModel } = props;
+  const { setRowModesModel } = props;
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
-  const handleClick = () => {
+  const handleAddRecord = () => {
     const id = Math.floor(Math.random() * 1000);
 
-    setRows((oldRows) => [
-      ...oldRows,
-      { id, firstName: '', lastName: '', phone: '' },
-    ]);
+    dispatch(
+      actions.setContacts([
+        ...rows,
+        { id, firstName: '', lastName: '', phone: '' },
+      ])
+    );
 
-    setRowModesModel((oldModel) => ({
+    setRowModesModel?.((oldModel) => ({
       ...oldModel,
       [id]: { mode: GridRowModes.Edit, fieldToFocus: 'firstName' },
     }));
@@ -36,10 +46,11 @@ export const Toolbar = (props: GridSlotProps['toolbar']) => {
 
   return (
     <GridToolbarContainer>
-      <Button color="primary" startIcon={<AddIcon />} onClick={handleClick}>
+      <ToggleThemeButton />
+      <Button color="primary" startIcon={<AddIcon />} onClick={handleAddRecord}>
         Add record
       </Button>
-      <ToggleThemeButton />
+      <SearchContacts />
     </GridToolbarContainer>
   );
 };

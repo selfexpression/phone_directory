@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   DataGrid,
   GridColDef,
@@ -19,10 +19,10 @@ import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import type { IContact } from '@/shared/types/contacts';
 import { Toolbar } from '../toolbar';
+import { actions } from '@/shared/lib/store';
 
 declare module '@mui/x-data-grid' {
   interface ToolbarPropsOverrides {
-    setRows: (newRows: (oldRows: IContact[]) => IContact[]) => void;
     setRowModesModel: (
       newModel: (oldModel: GridRowModesModel) => GridRowModesModel
     ) => void;
@@ -30,32 +30,33 @@ declare module '@mui/x-data-grid' {
 }
 
 interface IDirectoryColumnsActions {
-  onSetRowModesModel: (model: GridRowModesModel) => void;
-  onSetRow: (rows: IContact[]) => void;
+  setRowModesModel: (model: GridRowModesModel) => void;
+  setRows: (rows: IContact[]) => void;
   rows: IContact[];
   rowModesModel: GridRowModesModel;
 }
 
 const getDirectoryColumns = ({
-  onSetRowModesModel,
-  onSetRow,
+  setRowModesModel,
+  setRows,
   rows,
   rowModesModel,
 }: IDirectoryColumnsActions): GridColDef[] => {
   const handleEditClick = (id: GridRowId) => () => {
-    onSetRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
   };
 
   const handleSaveClick = (id: GridRowId) => () => {
-    onSetRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
   const handleDeleteClick = (id: GridRowId) => () => {
-    onSetRow(rows.filter((row) => row.id !== id));
+    const filteredRows = rows.filter((row) => row.id !== id);
+    setRows(filteredRows);
   };
 
   const handleCancelClick = (id: GridRowId) => () => {
-    onSetRowModesModel({
+    setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
@@ -109,19 +110,18 @@ const getDirectoryColumns = ({
   ] as const;
 };
 export const Directory = () => {
-  const contacts = useSelector(getContactsSelector);
-  const [rows, setRows] = useState<IContact[]>(contacts);
+  const dispatch = useDispatch();
+  const rows = useSelector(getContactsSelector);
+  const setRows = (newRows: IContact[]) => {
+    dispatch(actions.setContacts(newRows));
+  };
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const columns = getDirectoryColumns({
-    onSetRow: setRows,
-    onSetRowModesModel: setRowModesModel,
+    setRows,
+    setRowModesModel,
     rows,
     rowModesModel,
   });
-
-  useEffect(() => {
-    setRows(contacts);
-  }, [contacts]);
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
     params,
@@ -155,7 +155,7 @@ export const Directory = () => {
       disableColumnMenu
       slots={{ toolbar: Toolbar }}
       slotProps={{
-        toolbar: { setRows, setRowModesModel },
+        toolbar: { setRowModesModel },
       }}
       autoPageSize
       pagination
