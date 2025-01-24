@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, FC } from 'react';
+import { FC } from 'react';
+import { useGetContactsQuery } from '@/shared/lib/store/api';
 import { Paper, InputBase } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
@@ -11,20 +12,22 @@ interface ISearchContacts {
   rows: IContact[];
 }
 
-export const SearchContacts: FC<ISearchContacts> = ({ rows, setRows }) => {
-  const originalRows = useRef(rows);
+export const SearchContacts: FC<ISearchContacts> = ({ setRows }) => {
+  const { data: originalRows } = useGetContactsQuery();
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
 
-    const filteredRows = originalRows.current.filter(
+    const filteredRows = originalRows?.db?.filter(
       (row) =>
         row.firstName.toLowerCase().includes(value.toLowerCase()) ||
         row.lastName.toLowerCase().includes(value.toLowerCase()) ||
         row.phone.includes(value)
     );
 
-    setRows(filteredRows);
+    if (filteredRows) {
+      setRows(filteredRows);
+    }
   };
 
   return (
