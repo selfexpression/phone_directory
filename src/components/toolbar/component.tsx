@@ -15,6 +15,7 @@ import { ToggleThemeButton } from '../toggle-theme-button';
 import { SearchContacts } from '../search-contacts';
 import { getContactsSelector } from '@/shared/lib/store/selectors';
 import { actions } from '@/shared/lib/store';
+import { createContact } from '@/shared/api';
 
 export const Toolbar = (props: GridSlotProps['toolbar']) => {
   const dispatch = useDispatch();
@@ -23,15 +24,12 @@ export const Toolbar = (props: GridSlotProps['toolbar']) => {
   const { setRowModesModel } = props;
   const pageCount = useGridSelector(apiRef, gridPageCountSelector);
 
-  const handleAddRecord = () => {
+  const handleAddRecord = async () => {
     const id = Math.floor(Math.random() * 1000);
+    const newRow = { id, firstName: '', lastName: '', phone: '' };
 
-    dispatch(
-      actions.setContacts([
-        ...rows,
-        { id, firstName: '', lastName: '', phone: '' },
-      ])
-    );
+    await createContact(newRow);
+    dispatch(actions.setContacts([...rows, newRow]));
 
     setRowModesModel?.((oldModel) => ({
       ...oldModel,

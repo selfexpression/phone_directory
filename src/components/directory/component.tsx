@@ -20,6 +20,7 @@ import CancelIcon from '@mui/icons-material/Close';
 import type { IContact } from '@/shared/types/contacts';
 import { Toolbar } from '../toolbar';
 import { actions } from '@/shared/lib/store';
+import { deleteContact, updateContact } from '@/shared/api';
 
 declare module '@mui/x-data-grid' {
   interface ToolbarPropsOverrides {
@@ -50,8 +51,9 @@ const getDirectoryColumns = ({
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleDeleteClick = (id: GridRowId) => () => {
+  const handleDeleteClick = (id: GridRowId) => async () => {
     const filteredRows = rows.filter((row) => row.id !== id);
+    await deleteContact(id as number);
     setRows(filteredRows);
   };
 
@@ -135,10 +137,11 @@ export const Directory = () => {
     setRowModesModel(newRowModesModel);
   };
 
-  const processRowUpdate = (newRow: IContact) => {
+  const processRowUpdate = async (newRow: IContact) => {
     const updatedRows = rows.map((row) =>
       row.id === newRow.id ? newRow : row
     );
+    await updateContact(newRow);
     setRows(updatedRows);
     return newRow;
   };
