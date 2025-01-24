@@ -42,7 +42,7 @@ export const Toolbar = (props: GridSlotProps['toolbar']) => {
       <Button color="primary" startIcon={<AddIcon />} onClick={handleAddRecord}>
         Add record
       </Button>
-      <SearchContacts rows={rows} setRows={setRows} />
+      <SearchContacts setRows={setRows} />
     </GridToolbarContainer>
   );
 };
