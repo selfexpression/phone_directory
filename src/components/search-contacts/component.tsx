@@ -1,16 +1,17 @@
 'use client';
 
-import { useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useRef, FC } from 'react';
 import { Paper, InputBase } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import { getContactsSelector } from '@/shared/lib/store/selectors';
-import { actions } from '@/shared/lib/store';
+import type { IContact } from '@/shared/types/contacts';
 
-export const SearchContacts = () => {
-  const dispatch = useDispatch();
-  const rows = useSelector(getContactsSelector);
+interface ISearchContacts {
+  setRows: (newRows: IContact[]) => void;
+  rows: IContact[];
+}
+
+export const SearchContacts: FC<ISearchContacts> = ({ rows, setRows }) => {
   const originalRows = useRef(rows);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -23,7 +24,7 @@ export const SearchContacts = () => {
         row.phone.includes(value)
     );
 
-    dispatch(actions.setContacts(filteredRows));
+    setRows(filteredRows);
   };
 
   return (

@@ -20,7 +20,7 @@ export async function DELETE(
       db.splice(contactIndex, 1);
       writeDb(db);
 
-      return NextResponse.json({ data: db }, { status: 200 });
+      return NextResponse.json({ db }, { status: 200 });
     } else {
       throw new Error('Contact not found');
     }

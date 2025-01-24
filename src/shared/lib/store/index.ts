@@ -1,16 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
-import { contactsReducer } from './contactsSlice';
-import { contactsActions } from './contactsSlice';
-
-export const actions = {
-  ...contactsActions,
-};
+import { api } from './api';
 
 export const store = configureStore({
   reducer: {
-    contacts: contactsReducer,
+    [api.reducerPath]: api.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware),
 });
-
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;

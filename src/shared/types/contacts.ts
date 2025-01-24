@@ -6,5 +6,5 @@ export interface IContact {
 }
 
 export interface IContacts {
-  data: IContact[];
+  db: IContact[] | undefined;
 }
