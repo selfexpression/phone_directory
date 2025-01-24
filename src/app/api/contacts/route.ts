@@ -1,17 +1,11 @@
 import { NextResponse } from 'next/server';
-import db from '@/data/db.json';
+import { readDb, writeDb } from '@/shared/utils/db';
 import type { IContact } from '@/shared/types/contacts';
-
-interface IResponse<T> {
-  data?: T;
-  error?: string;
-}
+import type { IResponse } from '@/shared/types/api';
 
 export async function GET(): Promise<NextResponse<IResponse<IContact[]>>> {
   try {
-    if (!db) {
-      throw new Error('Database is empty or not found');
-    }
+    const db = readDb();
 
     return NextResponse.json({ data: db }, { status: 200 });
   } catch (error) {
@@ -27,6 +21,7 @@ export async function PUT(
   request: Request
 ): Promise<NextResponse<IResponse<IContact>>> {
   try {
+    const db = readDb();
     const response = await request.json();
     const contactIndex = db.findIndex(
       (contact) => contact.id === Number(response.id)
@@ -35,6 +30,7 @@ export async function PUT(
     if (contactIndex !== -1) {
       const currentContact = db[contactIndex];
       db[contactIndex] = { ...currentContact, ...response };
+      writeDb(db);
 
       return NextResponse.json({ data: db[contactIndex] }, { status: 200 });
     } else {
@@ -53,8 +49,10 @@ export async function POST(
   request: Request
 ): Promise<NextResponse<IResponse<IContact>>> {
   try {
+    const db = readDb();
     const response = await request.json();
     db.push(response);
+    writeDb(db);
 
     return NextResponse.json({ data: response }, { status: 201 });
   } catch (error) {

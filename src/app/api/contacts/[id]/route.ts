@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
-import db from '@/data/db.json';
+import { writeDb, readDb } from '@/shared/utils/db';
 import type { IContact } from '@/shared/types/contacts';
-
-interface IResponse<T> {
-  data?: T;
-  error?: string;
-}
+import type { IResponse } from '@/shared/types/api';
 
 export async function DELETE(
   request: Request,
   { params }: { params: { id: string } }
 ): Promise<NextResponse<IResponse<IContact[]>>> {
   try {
+    const db = readDb();
     const { id } = await params;
 
     if (!id) {
@@ -21,6 +18,8 @@ export async function DELETE(
     const contactIndex = db.findIndex((contact) => contact.id === Number(id));
     if (contactIndex !== -1) {
       db.splice(contactIndex, 1);
+      writeDb(db);
+
       return NextResponse.json({ data: db }, { status: 200 });
     } else {
       throw new Error('Contact not found');
