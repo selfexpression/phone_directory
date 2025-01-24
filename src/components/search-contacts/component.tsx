@@ -9,7 +9,6 @@ import type { IContact } from '@/shared/types/contacts';
 
 interface ISearchContacts {
   setRows: (newRows: IContact[]) => void;
-  rows: IContact[];
 }
 
 export const SearchContacts: FC<ISearchContacts> = ({ setRows }) => {
